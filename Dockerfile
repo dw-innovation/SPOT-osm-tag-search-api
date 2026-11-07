@@ -11,11 +11,13 @@ FROM ubuntu:20.04
 #ENV http_proxy=PROXY
 #ENV https_proxy=PROXY
 
+# No apt-get upgrade: focal is out of standard support, so its security
+# pocket can stop serving a package while still advertising it, and the
+# upgrade then fails with a 404. The same line broke the NLP API's build on a
+# clean runner. Installing only what is needed keeps that surface small.
 RUN apt-get update \
-    && apt-get upgrade -y \
-    && apt-get autoremove -y \
+    && apt-get install -y --no-install-recommends python3-pip \
     && apt-get clean \
-    && apt-get install -y python3-pip \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip
